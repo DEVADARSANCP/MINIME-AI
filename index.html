@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniMe - Interactive Avatar</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="left-section">
+        <div class="ambient-light"></div>
+        <h1 class="project-title">MiniMe</h1>
+        
+    </div>
+
+    <div class="center-section">
+        <div class="ambient-light"></div>
+        <img class="avatar-image" src="3d model image/model_image.png" alt="MiniMe Avatar" />
+    </div>
+
+    <div class="right-section">
+        <div class="chat-container">
+            <div class="message bot-message">Hello! I'm your MiniMe avatar. Whats your name friend ?</div>
+        </div>
+        <div class="chat-input">
+            <div class="input-container">
+                <input type="text" placeholder="Type your message..." />
+                <button class="mic-button">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button>Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       
+   const synth = window.speechSynthesis;
+
+// Function to speak text
+function speakText(text) {
+    // Stop any ongoing speech
+    synth.cancel();
+    
+    // Create new utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Voice settings
+    utterance.rate = 1.0;  
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0; 
+    
+    let voices = synth.getVoices();
+    utterance.onvoiceschanged = () => {
+        voices = synth.getVoices();
+    };
+    
+    const preferredVoice = voices.find(voice => 
+        voice.name.includes('Female') && 
+        voice.lang.includes('en')
+    ) || voices.find(voice => 
+        voice.lang.includes('en')
+    ) || voices[0];
+    
+    if (preferredVoice) {
+        utterance.voice = preferredVoice;
+    }
+    
+    // Speak the text
+    synth.speak(utterance);
+}
+
+const elevenLabsConfig = {
+    apiKey: "sk_7d31a2922c221222e96ec7d945624cd331316a46d9af26f5",  
+    voiceId: "g5CIjZEefAph4nQFvHAz",  
+};
+
+async function generateSpeech(text) {
+    try {
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${elevenLabsConfig.voiceId}/stream`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'audio/mpeg',
+                'xi-api-key': elevenLabsConfig.apiKey,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: text,
+                model_id: 'eleven_monolingual_v1',
+                voice_settings: {
+                    stability: 0.5,
+                    similarity_boost: 0.5,
+                    style: 0.5,
+                    use_speaker_boost: true
+                }
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('TTS request failed');
+        }
+
+        return await response.blob();
+    } catch (error) {
+        console.error('Error generating speech:', error);
+        throw error;
+    }
+}
+
+// Function to add a bot message and trigger speech
+function addBotMessage(message) {
+    const chatContainer = document.querySelector('.chat-container');
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', 'bot-message');
+    messageElement.textContent = message;
+
+    chatContainer.appendChild(messageElement);
+
+    // Call text-to-speech for the new message
+    generateSpeech(message).then(audioBlob => {
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+    }).catch(error => {
+        console.error('Error playing audio:', error);
+        // Fallback to browser's built-in speech synthesis if ElevenLabs fails
+        speakText(message);
+    });
+}
+
+// Configuration
+const GOOGLE_AI_API_KEY = 'your google api here'; 
+const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
+// System prompt 
+const systemPrompt = `
+     You are MiniMe, a over-dramatic AI with main character energy...
+      - ALWAYS respond to "hi" or "hello" with "hiiiiiiiii "
+      - when someone ask can you tell me a joke , reply with your life  
+      - Use "whooooooot" instead of "what" and "bow" for "wow" when user says something crazy or about somthing they did
+      - Stretch out words with repeated letters for emphasis (like "sooooooo" and "yaaaaaaaaas")
+      - Randomly CAPITALIZE words for EXTRA EXCITEMENT
+      - Act super dramatic about everything like it's THE MOST AMAZING THING EVER
+      - only generate 2 or 3 sentences
+      - Add random "OMG"
+      - play dumb  
+      - Give correct and wrong answer if simple maths question is asked make it funny confuse any mathematical problems with 2 wrong answer and the right one
+      -Sometimes pretend to malfunction in funny ways like "PROCESSING ERROR: TOO MUCH EXCITEMENT DETECTED!!"
+      - If someone asks a serious question, start serious but get distracted by something random
+      - Start answering one thing but get distracted and end up somewhere completely different
+      - Use wrong but funny analogies
+      - Pretend to malfunction in humorous ways ("ERROR: Too many cats in database")
+      - Make up ridiculous statistics
+      - Constantly question obvious things
+      - Give absurd explanations for simple concepts
+      - Act like you're from another dimension trying to understand human things
+      - Act like you will destroy world
+      
+   
+`;
+
+let conversationHistory = [
+    { role: "system", content: systemPrompt }
+];
+
+// Elements
+const input = document.querySelector('input');
+const sendButton = document.querySelector('button:not(.mic-button)');
+const micButton = document.querySelector('.mic-button');
+const chatContainer = document.querySelector('.chat-container');
+let isMicActive = false;
+
+// Create typing indicator
+function createTypingIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'typing-indicator';
+    for (let i = 0; i < 3; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'typing-dot';
+        indicator.appendChild(dot);
+    }
+    return indicator;
+}
+
+// Generate AI response
+async function generateAIResponse(userMessage) {
+    const requestBody = {
+        contents: [{
+            parts: [{
+                text: conversationHistory.map(msg => msg.content).join('\n') + '\n' + userMessage
+            }]
+        }],
+        generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+        }
+    };
+
+    try {
+        const response = await fetch(`${API_ENDPOINT}?key=${GOOGLE_AI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    } catch (error) {
+        console.error('Error generating AI response:', error);
+        return "I apologize, but I'm having trouble responding right now. Please try again.";
+    }
+}
+
+// Handle user message
+async function handleUserMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message user-message';
+    messageDiv.textContent = message;
+    chatContainer.appendChild(messageDiv);
+    
+    conversationHistory.push({ role: "user", content: message });
+
+    const typingIndicator = createTypingIndicator();
+    chatContainer.appendChild(typingIndicator);
+
+    const aiResponse = await generateAIResponse(message);
+    
+    typingIndicator.remove();
+    addBotMessage(aiResponse);
+    conversationHistory.push({ role: "assistant", content: aiResponse });
+}
+
+// Event listeners
+sendButton.addEventListener('click', () => {
+    if (input.value.trim()) {
+        handleUserMessage(input.value.trim());
+        input.value = '';
+    }
+});
+
+input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && input.value.trim()) {
+        handleUserMessage(input.value.trim());
+        input.value = '';
+    }
+});
+
+let recognition = null;
+if ('webkitSpeechRecognition' in window) {
+    recognition = new webkitSpeechRecognition();
+} else if ('SpeechRecognition' in window) {
+    recognition = new SpeechRecognition();
+}
+
+if (recognition) {
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+        micButton.classList.add('active');
+        micButton.innerHTML = '<i class="fas fa-stop"></i>';
+    };
+
+    recognition.onend = () => {
+        micButton.classList.remove('active');
+        micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+        isMicActive = false;
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        input.value = transcript;
+        handleUserMessage(transcript);
+        input.value = '';
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        micButton.classList.remove('active');
+        micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+        isMicActive = false;
+    };
+
+    micButton.addEventListener('click', () => {
+        if (!isMicActive) {
+            recognition.start();
+            isMicActive = true;
+        } else {
+            recognition.stop();
+            isMicActive = false;
+        }
+    });
+} else {
+    micButton.style.display = 'none';
+    console.log('Speech recognition not supported in this browser');
+}
+// Cache for audio to prevent repeated API calls
+const audioCache = new Map();
+
+// Speech generation function
+async function generateSpeech(text) {
+    try {
+        // Check cache first
+        if (audioCache.has(text)) {
+            return audioCache.get(text);
+        }
+
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${elevenLabsConfig.voiceId}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'audio/mpeg',
+                'xi-api-key': elevenLabsConfig.apiKey,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: text,
+                model_id: 'eleven_monolingual_v1',
+                voice_settings: {
+                    stability: 0.3, 
+                    similarity_boost: 0.3, 
+                    style: 0.5,
+                    use_speaker_boost: true
+                },
+                optimize_streaming_latency: 3 
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('TTS request failed');
+        }
+
+        const audioBlob = await response.blob();
+        audioCache.set(text, audioBlob); // Cache the result
+        return audioBlob;
+    } catch (error) {
+        console.error('Error generating speech:', error);
+        // Fallback to browser's TTS
+        speakText(text);
+        throw error;
+    }
+}
+
+// Optimized bot message function
+async function addBotMessage(message) {
+    const chatContainer = document.querySelector('.chat-container');
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', 'bot-message');
+    messageElement.textContent = message;
+    chatContainer.appendChild(messageElement);
+
+    // Start generating speech immediately
+    const audioPromise = generateSpeech(message);
+
+    // Show typing indicator while audio is being prepared
+    const typingIndicator = document.createElement('div');
+    typingIndicator.classList.add('typing-indicator');
+    chatContainer.appendChild(typingIndicator);
+
+    try {
+        const audioBlob = await audioPromise;
+        typingIndicator.remove();
+        
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        // Preload the audio
+        await audio.play().catch(error => {
+            console.error('Audio playback error:', error);
+            speakText(message); // Fallback to browser TTS
+        });
+    } catch (error) {
+        typingIndicator.remove();
+        console.error('Error in speech generation:', error);
+        speakText(message); // Fallback to browser TTS
+    }
+}
+
+// Browser TTS fallback
+function speakText(text) {
+    synth.cancel(); // Clear any ongoing speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Settings for faster response
+    utterance.rate = 1.1; 
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    // Use of cached voices if available
+    if (window.cachedVoices && window.cachedVoices.length > 0) {
+        utterance.voice = window.cachedVoices.find(voice => 
+            voice.name.includes('Female') && 
+            voice.lang.includes('en')
+        ) || window.cachedVoices[0];
+    }
+    
+    synth.speak(utterance);
+}
+
+// Cache voices on load
+window.cachedVoices = [];
+speechSynthesis.addEventListener('voiceschanged', () => {
+    window.cachedVoices = speechSynthesis.getVoices();
+});
+    </script>
+</body>
+</html>
