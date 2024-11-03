@@ -45,7 +45,8 @@ dlib (shape_predictor_68_face_landmarks.data) to extract facial features was fro
 # Installation
 run the html file 
 note : give your own api key in google api key in the script
-https://aistudio.google.com/app/apikey
+https://aistudio.google.com/app/apikey (to create google api key)
+https://elevenlabs.io/app/settings/api-keys (to create a elevenlavs api key)
 
 # Run
 run the minime ai.html in web browser 
