@@ -82,9 +82,9 @@ Watch as we introduce ourselves to MiniMe, our AI companion. Get ready for a bur
 
 
 ## Team Contributions
-* Devadarsan C P : Frontend, Backend Development, Machine Learning, AI, API Integration
+* Devadarsan C P : Frontend, Backend Development, Machine Learning, AI, API Integration and Development
 * Vinayapriya C C : Research, Concept Development, 3D Design, UI/UX, Git Expertise
-* Avanthika S: Project Management, Research, Script Developing, Content Creation
+* Avanthika S: Project Management, Research, Git Expertise, Script Development and Formatting
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
