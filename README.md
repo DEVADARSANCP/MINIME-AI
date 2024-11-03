@@ -4,13 +4,13 @@
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: Paw :3
 
 
 ### Team Members
-- Team Lead: Devadarsan C P - St. Joseph's College of Engineering and Technology, Palai
-- Member 2: Vinayapriya C C - St. Joseph's College of Engineering and Technology, Palai
-- Member 3: Avanthika S - St. Joseph's College of Engineering and Technology, Palai
+* Team Lead: Devadarsan C P - St. Joseph's College of Engineering and Technology, Palai
+* Member 2: Vinayapriya C C - St. Joseph's College of Engineering and Technology, Palai
+* Member 3: Avanthika S - St. Joseph's College of Engineering and Technology, Palai
 
 ### Project Description
 MiniMe is an interactive AI avatar that combines real-time voice interaction with a sassy, over-dramatic personality. Featuring text-to-speech capabilities and fluid animations, it creates engaging conversations while displaying dynamic visual responses through a sleek, modern interface. The avatar responds to both text and voice input with witty, energetic replies, making everyday interactions more entertaining.
@@ -21,85 +21,70 @@ People are bored of polite, sensible virtual assistants. Life’s too short for 
 
 
 ### The Solution (that nobody asked for)
-the snarky, over-dramatic AI avatar who makes every interaction an experience. With voice, animations, and witty comebacks, MiniMe adds spice to your day and makes sure you’re never bored talking to a screen.
+The snarky, over-dramatic AI avatar who makes every interaction an experience. With voice, animations, and witty comebacks, MiniMe adds spice to your day and makes sure you’re never bored talking to a screen.
 
 ## Technical Details
-### Technologies/Components Used
-For Software:
--Language Used HTML: For structuring the web page.
-CSS: For styling and layout.
-JavaScript: For interactivity, DOM manipulation, and API integration.
-Python : for facial features extraction
--Frameworks used elevenlabs api
-google ai studio api
-- Libraries used
-dlib python
-Font Awesome: For icons, such as the microphone icon.
-Web Speech API:
-- [Tools used]
+### Technologies Used
+#### Languages Used
+* HTML
+* CSS
+* JavaScript
+* Python
+#### Frameworks Used 
+* ElevenLabs API
+* Google AI Studio API
+#### Libraries Used
+* Dlib Python
+* Font Awesome
+* Web Speech API
+#### Tools used
+* Git
+* VS Code
 
 ### Implementation
-used google ai studio api to create the chat bot 
-text to speech is done using the api key of elevenlabs
-dlib (shape_predictor_68_face_landmarks.data) to extract facial features was from images ( created from scratch not accurate and couldnt use it here cos of the 3d issues so here its an image however i have uploaded the files)
-# Installation
-run the html file 
-note : give your own api key in google api key in the script
-https://aistudio.google.com/app/apikey (to create google api key)
-https://elevenlabs.io/app/settings/api-keys (to create a elevenlavs api key)
+This MiniMe project utilizes several APIs to create a conversational AI with a (planned) 3D face.
+Components:
+* Google AI Studio API: Used to build the core conversational logic of the chatbot.
+* ElevenLabs Text-to-Speech API: Converts generated text into audio for a natural-sounding voice.
+* dlib (shape_predictor_68_face_landmarks.data): (Not currently used) This library was intended to extract facial features from images for a planned 3D face, but limitations prevented its implementation.
 
-# Run
-run the minime ai.html in web browser 
+### Installation
+For a basic setup:
+* Run the HTML file: Open index.html in your web browser. <br> API Keys: Obtain and replace the placeholder values in the script with your own API keys:
+* Google AI Studio API Key: Create a new key at https://aistudio.google.com/app/apikey. 
+* ElevenLabs API Key: Generate a key from your ElevenLabs account settings: https://elevenlabs.io/docs/api-reference/text-to-speech 
+
+### Run
+Once you've replaced the API keys and opened the HTML file, your MiniMe chatbot should be ready for interaction.
+
+Note: The 3D facial features were not implemented due to technical limitations.
 
 ### Project Documentation
-For Software:
 
-# Screenshots (Add at least 3)
-![alt text](humor.png)
-just a random prompt to show its humor
+# Screenshots 
 
-![alt text](<math problem.png>)
-solving math equations
+<img src="intro.png" height="450" alt="Meet MiniMe">
+Interacting with MiniMe, our AI chatbot.
 
-![alt text](humor-1.png)
-*Add caption explaining what this shows*
-showing its humor
+<img src="humor.png" height="450" alt="Just a random prompt to show its humor">
+Just a random prompt to show its humor.
 
-# Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+<img src="math-problem.png" height="450" alt="Solving math equation"> 
+Solving math equations with MiniMe.
 
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
 
 ### Project Demo
 # Video
-[Add your demo video link here]
-*Explain what the video demonstrates*
 
-# Additional Demos
-[Add any extra demo materials/links]
+https://github.com/user-attachments/assets/53378a5c-d6af-4c40-b21e-ed7345156c20
+
+Watch as we introduce ourselves to MiniMe, our AI companion. Get ready for a burst of excitement as MiniMe responds with enthusiasm and a touch of drama. See how MiniMe engages in natural conversations, providing informative and creative responses. 
+
 
 ## Team Contributions
-Devadarsan C P : developing both backend ,frontend and ml 
-Vinayapriya C C : 3d design , ui ux , research
-Avanthika S: research and script developing
+* Devadarsan C P : Frontend, Backend Development, Machine Learning, AI, API Integration
+* Vinayapriya C C : Research, Concept Development, 3D Design, UI/UX, Git Expertise
+* Avanthika S: Project Management, Research, Script Developing, Content Creation
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
